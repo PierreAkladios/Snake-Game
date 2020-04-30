@@ -7,10 +7,10 @@ import tkinter as tk
 from tkinter import messagebox
 
 class Cube(object):
-    rows = 0
-    w = 0
+    rows = 16
+    w = 400
     #constructor
-    def __init__(self,start,dirnx=1,dirny=0,color=(255,0,0)):
+    def __init__(self,start,dirnx=1,dirny=0,color=(251, 255, 0)):
         self.pos = start
         self.dirnx = dirnx
         self.dirny = dirny
@@ -20,10 +20,19 @@ class Cube(object):
         """moving the cubes"""
         self.dirnx = dirnx
         self.dirny = dirny
-        self.pos(self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
 
     def draw(self, surface, eyes=False):
-        pass
+        distance = self.w//self.rows
+        #drawing the rectangle that is smaller than the size of the square to be able to see the borders
+        pygame.draw.rect(surface, self.color, (self.pos[0]*distance+1, self.pos[1]*distance+1, distance-2, distance-2))
+        if eyes:
+            centre = distance//2
+            radius = 3
+            circleMiddleLeft = (self.pos[0]*distance+centre-radius,self.pos[1]*distance+7)
+            circleMiddleRight = (self.pos[0]*distance + distance - radius*2, self.pos[1]*distance+7)
+            pygame.draw.circle(surface, (25, 85, 181), circleMiddleLeft, radius)
+            pygame.draw.circle(surface, (25, 85, 181), circleMiddleRight, radius)
 
 class Snake(object):
     body = []
@@ -99,7 +108,27 @@ class Snake(object):
         pass
 
     def addCube(self):
-        pass
+        '''
+        add cube after the tail of the snake depending on which direction the snack is moving
+        (None)->None
+        '''
+        tail = self.body[-1]
+        dirnx = tail.dirnx
+        dirny = tail.dirny
+        #checking what direction the snake is moving in
+        if dirnx == 1 and dirny == 0:#moving right
+            self.body.append(Cube((tail.pos[0]-1,tail.pos[1])))
+        elif dirnx == -1 and dirny == 0:#moving left
+            self.body.append(Cube((tail.pos[0]+1,tail.pos[1])))
+        elif dirnx == 0 and dirny == 1:#moving down
+             self.body.append(Cube((tail.pos[0],tail.pos[1]-1)))
+        elif dirnx == 0 and dirny == 1:#moving up
+             self.body.append(Cube((tail.pos[0],tail.pos[1]+1)))
+
+        #making the cube move in the same direction as the rest of the body
+        self.body[-1].dirnx = dirnx
+        self.body[-1].dirny = dirny
+             
 
     def draw(self, surface):
         '''drawing the snake'''
@@ -122,26 +151,43 @@ def drawGrid(w, rows, surface):
         pygame.draw.line(surface, (0,0,0), (x,0), (x,w))#vertical
         pygame.draw.line(surface, (0,0,0), (0,y), (w,y))#horizontal
         
-
 def redrawWindow(surface):
-    global rows, width, s
+    global rows, width, s, snack
     surface.fill((255,255,255)) #coloring the background
     s.draw(surface)
+    snack.draw(surface)
     drawGrid(width, rows, surface)
     pygame.display.update()
 
-def randomSnack(rows, items):
-    pass
+def randomSnack(rows, snake):
+    '''
+    generating random cubes on the board for the snake to eat
+    (int,snake)->(tuple)
+    '''
+    positions = snake.body
+
+    while True:
+        x = random.randrange(rows)
+        y = random.randrange(rows)
+        #making sure that the snack will not appear on the body can be done with a for loop
+        #A lambda function can take any number of arguments, but can only have one expression. typically used as an anonymous function inside another function
+        #filter returns filtered items according to certain conditions.
+        if len(list(filter(lambda a: a.pos == (x,y), positions))) >0:
+            continue #go through the loop again
+        else:
+            break
+    return (x,y)
 
 def message_box(subject, content):
     pass
 
 def main():
-    global width, rows,s
+    global width, rows,s, snack
     width = 400
     rows = 16
     win = pygame.display.set_mode((width, width))
     s = Snake((251, 255, 0), (8,8))
+    snack = Cube(randomSnack(rows, s), color =(255,0,0))
     flag = True
 
     clock = pygame.time.Clock() #clock to control the speed of the frames
@@ -149,7 +195,14 @@ def main():
     while flag:
         pygame.time.delay(40) #delay
         clock.tick(8) #blocks/second
+        s.move()
+        #cehcking if the head of the snack has hit the snack
+        if s.body[0].pos == snack.pos:
+            s.addCube()
+            snack = Cube(randomSnack(rows, s), color =(255,0,0))
         redrawWindow(win)
+        ##CONTINUE HERE 5m
+        
     pass
 
 main()
