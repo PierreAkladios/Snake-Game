@@ -50,7 +50,7 @@ class Snake(object):
         for event in pygame.event.get() :
             #quitting the game
             if event.type == pygame.QUIT:
-                pygagme.quit()
+                pygame.quit()
                 
             #gets from a dictionnary of all keys the keys if they were pressed
             keys = pygame.key.get_pressed()
@@ -105,7 +105,16 @@ class Snake(object):
                 else: c.move(c.dirnx,c.dirny) #keep moving normaly
                       
     def reset(self, pos):
-        pass
+        '''
+        (coordinates)-> None
+        getting rid of the body of the snake to restart the game
+        '''
+        self.head = Cube(pos)
+        body = []
+        self.body.append(self.head)
+        turns = {}
+        self.dirnx = 0
+        self.dirny = 1
 
     def addCube(self):
         '''
@@ -137,9 +146,7 @@ class Snake(object):
                 c.draw(surface,True)
             else: # drawing the body
                 c.draw(surface)
-                
-            
-
+                            
 def drawGrid(w, rows, surface):
     sizeBetween = w//rows #size of each square
     x=0
@@ -179,7 +186,14 @@ def randomSnack(rows, snake):
     return (x,y)
 
 def message_box(subject, content):
-    pass
+    root = tk.Tk()
+    root.attributes("-topmost", True)
+    root.withdraw
+    messagebox.showinfo(subject, content)
+    try:
+        root.destroy()
+    except:
+        pass
 
 def main():
     global width, rows,s, snack
@@ -200,10 +214,18 @@ def main():
         if s.body[0].pos == snack.pos:
             s.addCube()
             snack = Cube(randomSnack(rows, s), color =(255,0,0))
+
+        #checking if the head collided with the body
+        for x in range(len(s.body)):
+            #The map() function executes a specified function for each item in a iterable. The item is sent to the function as a parameter.
+            #map(function, iterables) as many iterables as parameters in the function
+            if s.body[x].pos in list(map(lambda a:a.pos, s.body[x+1:])):
+                print("Score: " + str(len(s.body)))
+                #message_box("Loser!", "Play again if you want")
+                s.reset((8,8))
+                break
+                
         redrawWindow(win)
-        ##CONTINUE HERE 5m
-        
-    pass
 
 main()
 
