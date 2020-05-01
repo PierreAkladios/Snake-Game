@@ -110,9 +110,9 @@ class Snake(object):
         getting rid of the body of the snake to restart the game
         '''
         self.head = Cube(pos)
-        body = []
+        self.body = []
         self.body.append(self.head)
-        turns = {}
+        self.turns = {}
         self.dirnx = 0
         self.dirny = 1
 
@@ -220,8 +220,7 @@ def main():
             #The map() function executes a specified function for each item in a iterable. The item is sent to the function as a parameter.
             #map(function, iterables) as many iterables as parameters in the function
             if s.body[x].pos in list(map(lambda a:a.pos, s.body[x+1:])):
-                print("Score: " + str(len(s.body)))
-                #message_box("Loser!", "Play again if you want")
+                message_box("Loser!", "Play again if you want \n" +"Score: " + str(len(s.body)))
                 s.reset((8,8))
                 break
                 
