@@ -220,13 +220,10 @@ def main():
             #The map() function executes a specified function for each item in a iterable. The item is sent to the function as a parameter.
             #map(function, iterables) as many iterables as parameters in the function
             if s.body[x].pos in list(map(lambda a:a.pos, s.body[x+1:])):
-                message_box("Loser!", "Play again if you want \n" +"Score: " + str(len(s.body)))
+                message_box("Loser!", "Play again if you want \n" +"Score: " + str(len(s.body)-1))
                 s.reset((8,8))
                 break
                 
         redrawWindow(win)
 
 main()
-
-
-
