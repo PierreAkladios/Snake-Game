@@ -1,4 +1,4 @@
-traditional snake game designed using pygame built with the intention of learning more about game devellopement and pygame.
+traditional snake game designed using pygame built with the intention of learning more about game developement and pygame.
 
 sources used in the devellopement:
 
