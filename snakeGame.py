@@ -203,9 +203,11 @@ def main():
     s = Snake((251, 255, 0), (8,8))
     snack = Cube(randomSnack(rows, s), color =(255,0,0))
     flag = True
+    #size = len(s.body)-1
+    #speed = 5
 
     clock = pygame.time.Clock() #clock to control the speed of the frames
-
+    #planning to add multiple speeds depending on the length of the snake
     while flag:
         pygame.time.delay(40) #delay
         clock.tick(8) #blocks/second
